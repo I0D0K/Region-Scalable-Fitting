@@ -52,3 +52,23 @@ The energy functional of the Region Scalable Fitting (RSF) model is defined as:
 - **Initialization**:Initialize the level set function using a distance transform, assigning a distance value to each pixel, and define the initial contour of the target region by setting a threshold.
 - **Iterative Update**:
   Perform iterative updates according to the RSF model, and eventually obtain the final segmentation result of the target region.
+
+## Segmentation Result
+The following results are obtained using the RSF model on sample images.
+
+<p align="center">
+  <img src="figures/cirno result.png" width="60%" />
+</p>
+
+<p align="center">
+  <img src="figures/tom result.png" width="60%" />
+</p>
+
+## Limitations
+
+The current implementation demonstrates the feasibility of the RSF model for image segmentation; however, several limitations remain:
+
+- **Color image handling**: The model currently operates on grayscale images and lacks full support for color-aware energy modeling.
+- **Computational cost**: The iterative level set evolution is computationally intensive and may be slow for large-scale images.
+- **Parameter sensitivity**: Model performance depends on manually tuned hyperparameters.
+- **Convergence criteria**: A strict and adaptive stopping condition has not yet been fully established.
