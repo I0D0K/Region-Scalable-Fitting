@@ -22,7 +22,33 @@ def dirac_epsilon(z, epsilon=1.0):
 
 # RSF model evolution function
 def RSF(phi, img, lambda1, lambda2, mu, nu, kernel, step, epsilon=1.0, max_iter=1000):
+    """
+       Region-Scalable Fitting (RSF) level set evolution.
+
+       Parameters:
+           phi       : Level set function (signed distance function)
+           img       : Input image (grayscale, normalized to [0,1])
+           lambda1   : Weight for inside region fitting
+           lambda2   : Weight for outside region fitting
+           mu        : Weight for distance regularization (penalty term)
+           nu        : Weight for length term (curve smoothness)
+           kernel    : Gaussian kernel for local fitting
+           step      : Time step for evolution
+           epsilon   : Smoothing parameter for Heaviside and Dirac functions
+           max_iter  : Maximum number of iterations
+
+       Returns:
+           phi       : Final level set function after evolution
+    """
+    phi_old = phi.copy()
+
     for i in range(max_iter):
+
+        if i % 50 == 0:
+            diff = np.mean(np.abs(phi - phi_old))
+            print(f"Progress: {i}/{max_iter} ({i / max_iter * 100:.1f}%), diff = {diff:.6f}")
+            phi_old = phi.copy()
+
         Hea = heaviside_epsilon(phi, epsilon)
         Drc = dirac_epsilon(phi, epsilon)
 
@@ -70,7 +96,22 @@ def initialize_phi(shape, radius=20):
 
 # Main function
 if __name__ == "__main__":
-    img = cv2.imread("your .bmp", cv2.IMREAD_GRAYSCALE)  # Load grayscale image
+    # Load image from disk
+    img = cv2.imread(r"path/to/your/image.jpg")
+
+    # Ensure image is loaded correctly
+    if img is None:
+        raise ValueError("Failed to load image. Check the file path.")
+
+    # Convert to grayscale if image is not already single-channel
+    if len(img.shape) == 3:
+        if img.shape[2] == 4:
+            # Handle RGBA images
+            img = cv2.cvtColor(img, cv2.COLOR_BGRA2GRAY)
+        else:
+            # Handle standard BGR images
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
     phi = initialize_phi(img.shape)  # Initialize level set function
 
     # Perform RSF model evolution
